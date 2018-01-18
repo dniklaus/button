@@ -6,6 +6,59 @@ class Timer;
 //-----------------------------------------------------------------------------
 
 /**
+ * Interface for a Pin Supervisor.
+ */
+class PinSupervisor
+{
+private:
+  bool m_isButtonNegativeLogic;
+
+protected:
+  /**
+   * Constructor.
+   * Abstract class -> protected
+   * @param isButtonNegativeLogic Consider button pressed when buttonPin is LOW (true) or HIGH (false); default: false (button pressed when buttonPin is HIGH)
+   */
+  PinSupervisor(bool isButtonNegativeLogic = IS_POS_LOGIC)
+  : m_isButtonNegativeLogic(isButtonNegativeLogic)
+{ }
+  virtual ~PinSupervisor() { }
+
+public:
+  virtual bool getPinState() = 0;
+
+  bool isButtonPressed()
+  {
+    bool pressed = getPinState();
+    pressed = (m_isButtonNegativeLogic ? !pressed : pressed);
+    return pressed;
+  }
+
+  void setButtonLogic(bool isNegativeLogic) { m_isButtonNegativeLogic = isNegativeLogic; }
+  bool isButtonNegativeLogic() { return m_isButtonNegativeLogic; }
+
+  /**
+   * Constant for isButtonNegativeLogic parameter of the constructor (@see PinSupervisor()), to create a button switching the pin to HIGH.
+   */
+  static const bool IS_POS_LOGIC = false;
+
+  /**
+   * Constant for isButtonNegativeLogic parameter of the constructor (@see PinSupervisor()), to create a button switching the pin to LOW.
+   */
+  static const bool IS_NEG_LOGIC = true;
+
+private:  // forbidden functions
+  PinSupervisor(const PinSupervisor& src);              // copy constructor
+  PinSupervisor& operator = (const PinSupervisor& src); // assignment operator
+};
+
+//-----------------------------------------------------------------------------
+
+class DetectorStrategy;
+
+//-----------------------------------------------------------------------------
+
+/**
  * Interface for a Toggle Button Adapter to receive status change notifications.
  */
 class ButtonAdapter
@@ -30,28 +83,22 @@ private:  // forbidden functions
 //-----------------------------------------------------------------------------
 
 /**
- * Toggle Button object model.
- * - toggles its status on button status change from "not pressed" to "pressed"
+ * Button object model.
  * - button signal is debounced by a 50ms timer
- * - button pin is configurable
- * - status indication pin is configurable
- * - button logic is configurable
- * - status change notifications can be emitted through injectable specific adapter implementation.
- * - status can be changed and toggled by client program
- * - also useful to implement virtual binary status
- * - also useful when just a a button debouncer is needed
+ * - button pin supervisor is injectable
  */
 class Button
 {
+  friend class DetectorStrategy;
+
 public:
   /**
    * Constructor.
-   * @param buttonPin             Arduino Pin where the button is connected to; default: BTN_NC (not connected)
-   * @param indicatorPin          Arduino Pin where the (LED) status indication is connected to; default: BTN_NC (not connected)
-   * @param isButtonNegativeLogic Consider button pressed when buttonPin is LOW (true) or HIGH (false); default: false (button pressed when buttonPin is HIGH)
-   * @param adapter               Inject pointer to ButtonAdapter object; NULL pointer: no status change notification will be sent out.
+   * @param pinSupervisor Inject pointer to PinSupervisor object; NULL pointer: no input pin will be supervised
+   * @param detector      Inject pointer to a (chain of) DetectorStrategy object(s)
+   * @param adapter       Inject pointer to ButtonAdapter object; NULL pointer: no status change notification will be sent out.
    */
-  Button(int buttonPin = BTN_NC, int indicatorPin = IND_NC, bool isButtonNegativeLogic = false, ButtonAdapter* adapter = 0);
+  Button(PinSupervisor* pinSupervisor = 0, DetectorStrategy* detector = 0, ButtonAdapter* adapter = 0);
 
   /**
    * Destructor.
@@ -71,22 +118,11 @@ public:
   void attachAdapter(ButtonAdapter* adapter);
 
   /**
-   * Retrieve current status.
-   * @return  Current status: active (true) or inactive (false).
+   * Debounce the input signal.
+   *
+   * Called with regular interval (debounce time)
    */
-  bool isActive();
-
-  /**
-   * Set new status.
-   * @param isActive  New status: active (true) or inactive (false).
-   */
-  void setIsActive(bool isActive);
-
-  /**
-   * Toggle current status.
-   * Set new status to true if current was false and vice versa.
-   */
-  virtual void toggle();
+  void debounce();
 
   /**
    * Retrieve current button status.
@@ -94,34 +130,19 @@ public:
    */
   bool isButtonPressed();
 
-  /**
-   * Constant for isButtonNegativeLogic parameter of the constructor (@see Button()), to create a button switching the pin to HIGH.
-   */
-  static const bool IS_POS_LOGIC;
+  DetectorStrategy* detectorChain();
 
-  /**
-   * Constant for isButtonNegativeLogic parameter of the constructor (@see Button()), to create a button switching the pin to LOW.
-   */
-  static const bool IS_NEG_LOGIC;
-
-  /**
-   * Constant for constructor's buttonPin parameter (@see Button()), to create a button object w/o any button connected to a pin, i.e. useful for virtual button.
-   */
-  static const int BTN_NC;
-
-  /**
-   * Constant for constructor's indicatorPin parameter (@see Button()), to create a button object w/o any indicator output connected to a pin.
-   */
-  static const int IND_NC;
+protected:
+  void addDetector(DetectorStrategy* detector);
+  void removeDetector(DetectorStrategy* detector);
 
 private:
   Timer* m_debounceTimer;
+  PinSupervisor* m_pinSupervisor;
   ButtonAdapter* m_adapter;
-  bool m_isButtonNegativeLogic;
-  bool m_isActive;
-  int m_buttonPin;
-  int m_indicatorPin;
-  static const int s_defaultKeyPollTime;
+  DetectorStrategy* m_detectorChain;
+  bool m_lastWasButtonPressed;                  /// debouncing helper
+  static const int s_defaultKeyPollTimeMillis;  /// debounce poll time
   
 private:  // forbidden functions
   Button(const Button& src);              // copy constructor
