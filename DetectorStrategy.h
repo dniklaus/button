@@ -19,6 +19,7 @@ protected:
   DetectorStrategy();
   virtual ~DetectorStrategy();
 
+public:
   void setNext(DetectorStrategy* next);
   DetectorStrategy* next();
 
