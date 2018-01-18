@@ -89,7 +89,7 @@ private:  // forbidden functions
  */
 class Button
 {
-  friend class DetectorStrategy;
+//  friend class DetectorStrategy;
 
 public:
   /**
