@@ -48,3 +48,14 @@ EdgeDetector::EdgeDetector()
 
 EdgeDetector::~EdgeDetector()
 { }
+
+void EdgeDetector::onRisingEdge()
+{
+  onEdge(true);
+}
+
+void EdgeDetector::onFallingEdge()
+{
+  onEdge(false);
+}
+
