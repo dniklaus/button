@@ -13,8 +13,6 @@ class DetectorStrategy
 public:
   void doActionFilter(bool currentState, bool formerState);
 
-
-
 protected:
   DetectorStrategy();
   virtual ~DetectorStrategy();
@@ -23,6 +21,7 @@ public:
   void setNext(DetectorStrategy* next);
   DetectorStrategy* next();
 
+protected:
   virtual void onRisingEdge() { }
   virtual void onFallingEdge() { }
 
@@ -41,6 +40,12 @@ class EdgeDetector : public DetectorStrategy
 public:
   EdgeDetector();
   virtual ~EdgeDetector();
+
+  virtual void onEdge(bool newState) = 0;
+
+protected:
+  virtual void onRisingEdge();
+  virtual void onFallingEdge();
 
 private:  // forbidden functions
   EdgeDetector(const EdgeDetector& src);              // copy constructor

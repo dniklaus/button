@@ -21,7 +21,8 @@ protected:
    */
   PinSupervisor(bool isButtonNegativeLogic = IS_POS_LOGIC)
   : m_isButtonNegativeLogic(isButtonNegativeLogic)
-{ }
+  { }
+
   virtual ~PinSupervisor() { }
 
 public:
