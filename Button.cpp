@@ -77,3 +77,40 @@ bool Button::isButtonPressed()
   return pressed;
 }
 
+void Button::addDetector(DetectorStrategy* detector)
+{
+  if (0 == m_detectorChain)
+  {
+    m_detectorChain = detector;
+  }
+  else
+  {
+    DetectorStrategy* next = m_detectorChain;
+    while (next->next() != 0)
+    {
+      next = next->next();
+    }
+    next->setNext(detector);
+  }
+}
+
+void Button::removeDetector(DetectorStrategy* detector)
+{
+  if (m_detectorChain == detector)
+  {
+    m_detectorChain = detector->next();
+  }
+  else
+  {
+    DetectorStrategy* next = m_detectorChain;
+    while ((next != 0) && (next->next() != detector))
+    {
+      next = next->next();
+    }
+    if (next != 0)
+    {
+      next->setNext(detector->next());
+    }
+  }
+
+}

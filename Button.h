@@ -133,7 +133,6 @@ public:
 
   DetectorStrategy* detectorChain();
 
-protected:
   void addDetector(DetectorStrategy* detector);
   void removeDetector(DetectorStrategy* detector);
 
