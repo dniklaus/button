@@ -8,10 +8,15 @@
 #ifndef LIB_BUTTON_DETECTORSTRATEGY_H_
 #define LIB_BUTTON_DETECTORSTRATEGY_H_
 
+class Button;
+
 class DetectorStrategy
 {
 public:
   void doActionFilter(bool currentState, bool formerState);
+
+  void attachButton(Button* myButton);
+  Button* button();
 
 protected:
   DetectorStrategy();
@@ -27,6 +32,7 @@ protected:
 
 private:
   DetectorStrategy* m_next;
+  Button* m_button;
 
 private:  // forbidden functions
   DetectorStrategy(const DetectorStrategy& src);              // copy constructor

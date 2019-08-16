@@ -2,7 +2,7 @@
 #include "DetectorStrategy.h"
 #include "Button.h"
 
-const int  Button::s_defaultKeyPollTimeMillis = 50;
+const int  Button::c_defaultKeyPollTimeMillis = 50;
 
 //-----------------------------------------------------------------------------
 
@@ -27,13 +27,32 @@ public:
 
 //-----------------------------------------------------------------------------
 
-Button::Button(PinSupervisor* pinSupervisor, DetectorStrategy* detector, ButtonAdapter* adapter)
-: m_debounceTimer(new Timer(new DebounceTimerAdatper(this), Timer::IS_RECURRING, s_defaultKeyPollTimeMillis))
-, m_pinSupervisor(pinSupervisor)
-, m_adapter(adapter)
-, m_detectorChain(detector)
-, m_lastWasButtonPressed(false)
+ButtonAdapter::ButtonAdapter()
+: m_button(0)
 { }
+
+void ButtonAdapter::attachButton(Button* myButton)
+{
+  m_button = myButton;
+}
+
+Button* ButtonAdapter::button()
+{
+  return m_button;
+}
+
+//-----------------------------------------------------------------------------
+
+Button::Button(PinSupervisor* pinSupervisor, DetectorStrategy* detector, ButtonAdapter* adapter)
+: m_debounceTimer(new Timer(new DebounceTimerAdatper(this), Timer::IS_RECURRING, c_defaultKeyPollTimeMillis))
+, m_pinSupervisor(pinSupervisor)
+, m_adapter(0)
+, m_detectorChain(0)
+, m_lastWasButtonPressed(false)
+{
+  attachAdapter(adapter);
+  addDetector(detector);
+}
 
 Button::~Button()
 {
@@ -49,6 +68,10 @@ ButtonAdapter* Button::adapter()
 void Button::attachAdapter(ButtonAdapter* adapter)
 {
   m_adapter = adapter;
+  if (0 != m_adapter)
+  {
+    m_adapter->attachButton(this);
+  }
 }
 
 void Button::debounce()
@@ -79,6 +102,10 @@ bool Button::isButtonPressed()
 
 void Button::addDetector(DetectorStrategy* detector)
 {
+  if (0 != detector)
+  {
+    detector->attachButton(this);
+  }
   if (0 == m_detectorChain)
   {
     m_detectorChain = detector;

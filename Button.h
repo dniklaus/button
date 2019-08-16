@@ -2,6 +2,7 @@
 #define _Button_H
 
 class Timer;
+class Button;
 
 //-----------------------------------------------------------------------------
 
@@ -60,10 +61,13 @@ class DetectorStrategy;
 //-----------------------------------------------------------------------------
 
 /**
- * Interface for a Toggle Button Adapter to receive status change notifications.
+ * Abstract class for a Toggle Button Adapter to receive status change notifications.
  */
 class ButtonAdapter
 {
+private:
+  Button* m_button;
+
 public:
   /**
    * Notification method to be implemented by specific adapter.
@@ -72,8 +76,12 @@ public:
    */
   virtual void notifyStatusChanged(bool isActive) = 0;
 
+  virtual void attachButton(Button* myButton);
+
+  Button* button();
+
 protected:
-  ButtonAdapter() { }
+  ButtonAdapter() ;
   virtual ~ButtonAdapter() { }
 
 private:  // forbidden functions
@@ -142,7 +150,7 @@ private:
   ButtonAdapter* m_adapter;
   DetectorStrategy* m_detectorChain;
   bool m_lastWasButtonPressed;                  /// debouncing helper
-  static const int s_defaultKeyPollTimeMillis;  /// debounce poll time
+  static const int c_defaultKeyPollTimeMillis;  /// debounce poll time
   
 private:  // forbidden functions
   Button(const Button& src);              // copy constructor
