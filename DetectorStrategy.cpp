@@ -5,14 +5,26 @@
  *      Author: nid
  */
 
+#include "Button.h"
 #include "DetectorStrategy.h"
 
 DetectorStrategy::DetectorStrategy()
 : m_next(0)
+, m_button(0)
 { }
 
 DetectorStrategy::~DetectorStrategy()
 { }
+
+void DetectorStrategy::attachButton(Button* myButton)
+{
+  m_button = myButton;
+}
+
+Button* DetectorStrategy::button()
+{
+  return m_button;
+}
 
 void DetectorStrategy::setNext(DetectorStrategy* next)
 {
