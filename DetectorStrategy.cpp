@@ -52,22 +52,4 @@ void DetectorStrategy::doActionFilter(bool currentState, bool formerState)
   }
 }
 
-//-----------------------------------------------------------------------------
-
-EdgeDetector::EdgeDetector()
-: DetectorStrategy()
-{ }
-
-EdgeDetector::~EdgeDetector()
-{ }
-
-void EdgeDetector::onRisingEdge()
-{
-  onEdge(true);
-}
-
-void EdgeDetector::onFallingEdge()
-{
-  onEdge(false);
-}
 
