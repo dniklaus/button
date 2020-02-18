@@ -39,23 +39,4 @@ private:  // forbidden functions
   DetectorStrategy& operator = (const DetectorStrategy& src); // assignment operator
 };
 
-//-----------------------------------------------------------------------------
-
-class EdgeDetector : public DetectorStrategy
-{
-public:
-  EdgeDetector();
-  virtual ~EdgeDetector();
-
-  virtual void onEdge(bool newState) = 0;
-
-protected:
-  virtual void onRisingEdge();
-  virtual void onFallingEdge();
-
-private:  // forbidden functions
-  EdgeDetector(const EdgeDetector& src);              // copy constructor
-  EdgeDetector& operator = (const EdgeDetector& src); // assignment operator
-};
-
 #endif /* LIB_BUTTON_DETECTORSTRATEGY_H_ */
