@@ -74,6 +74,12 @@ void Button::attachAdapter(ButtonAdapter* adapter)
   }
 }
 
+DetectorStrategy* Button::detectorChain()
+{
+  return m_detectorChain;
+}
+
+
 void Button::debounce()
 {
   bool currentIsButtonPressed = isButtonPressed();
@@ -139,5 +145,4 @@ void Button::removeDetector(DetectorStrategy* detector)
       next->setNext(detector->next());
     }
   }
-
 }
