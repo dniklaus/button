@@ -18,6 +18,9 @@ public:
   void attachButton(Button* myButton);
   Button* button();
 
+  virtual void notifyPeerStatusChanged(bool isActive) { }
+
+
 protected:
   DetectorStrategy();
   virtual ~DetectorStrategy();
