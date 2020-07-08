@@ -1,7 +1,7 @@
 #ifndef _Button_H
 #define _Button_H
 
-class Timer;
+class SpinTimer;
 class Button;
 
 //-----------------------------------------------------------------------------
@@ -145,7 +145,7 @@ public:
   void removeDetector(DetectorStrategy* detector);
 
 private:
-  Timer* m_debounceTimer;
+  SpinTimer* m_debounceTimer;
   PinSupervisor* m_pinSupervisor;
   ButtonAdapter* m_adapter;
   DetectorStrategy* m_detectorChain;
