@@ -1,4 +1,4 @@
-#include "Timer.h"
+#include "SpinTimer.h"
 #include "DetectorStrategy.h"
 #include "Button.h"
 
@@ -6,7 +6,7 @@ const int  Button::c_defaultKeyPollTimeMillis = 50;
 
 //-----------------------------------------------------------------------------
 
-class DebounceTimerAdatper : public TimerAdapter
+class DebounceTimerAdatper : public SpinTimerAdapter
 {
 private:
   Button* m_Button;
@@ -44,7 +44,7 @@ Button* ButtonAdapter::button()
 //-----------------------------------------------------------------------------
 
 Button::Button(PinSupervisor* pinSupervisor, DetectorStrategy* detector, ButtonAdapter* adapter)
-: m_debounceTimer(new Timer(new DebounceTimerAdatper(this), Timer::IS_RECURRING, c_defaultKeyPollTimeMillis))
+: m_debounceTimer(new SpinTimer(new DebounceTimerAdatper(this), SpinTimer::IS_RECURRING, c_defaultKeyPollTimeMillis))
 , m_pinSupervisor(pinSupervisor)
 , m_adapter(0)
 , m_detectorChain(0)
