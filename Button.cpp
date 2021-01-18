@@ -6,13 +6,13 @@ const int  Button::c_defaultKeyPollTimeMillis = 50;
 
 //-----------------------------------------------------------------------------
 
-class DebounceTimerAdatper : public SpinTimerAdapter
+class DebounceTimerAction : public SpinTimerAction
 {
 private:
   Button* m_Button;
   
 public:
-  DebounceTimerAdatper(Button* Button)
+  DebounceTimerAction(Button* Button)
   : m_Button(Button)
   { }
   
@@ -44,7 +44,7 @@ Button* ButtonAdapter::button()
 //-----------------------------------------------------------------------------
 
 Button::Button(PinSupervisor* pinSupervisor, DetectorStrategy* detector, ButtonAdapter* adapter)
-: m_debounceTimer(new SpinTimer(new DebounceTimerAdatper(this), SpinTimer::IS_RECURRING, c_defaultKeyPollTimeMillis))
+: m_debounceTimer(new SpinTimer(c_defaultKeyPollTimeMillis, new DebounceTimerAction(this), SpinTimer::IS_RECURRING, SpinTimer::IS_AUTOSTART))
 , m_pinSupervisor(pinSupervisor)
 , m_adapter(0)
 , m_detectorChain(0)
@@ -56,7 +56,7 @@ Button::Button(PinSupervisor* pinSupervisor, DetectorStrategy* detector, ButtonA
 
 Button::~Button()
 {
-  delete m_debounceTimer->adapter();
+  delete m_debounceTimer->action();
   delete m_debounceTimer; m_debounceTimer = 0;
 }
 
