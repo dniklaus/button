@@ -21,7 +21,6 @@ public:
   virtual void notifyPeerStatusChanged(bool isActive) { }
 
 
-protected:
   DetectorStrategy();
   virtual ~DetectorStrategy();
 

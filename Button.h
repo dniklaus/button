@@ -80,7 +80,6 @@ public:
 
   Button* button();
 
-protected:
   ButtonAdapter() ;
   virtual ~ButtonAdapter() { }
 
